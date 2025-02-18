@@ -37,7 +37,7 @@
                                             }
                                         </ul>
                                     </li>
-                                    
+
                                 </ul>
                             </div>
                             <div class="widget_list widget_filter">
@@ -70,10 +70,10 @@
                                                 </div>
                                             </div>
                                         }
-                                     }
-                                    
-                                    
-                                    
+                                    }
+
+
+
                                 </div>
                             </div>
                         </div>
@@ -122,15 +122,26 @@
                                         {
                                             <option value="@option">@option</option>
                                         }
-                                        
+
                                     }
                                 </select>
 
                                 <!-- Chọn thứ tự sắp xếp -->
+                                @{
+                                    var isDescending = false;
+                                    if (ViewData["isDescending"] != null){
+                                        isDescending = (bool) ViewData["isDescending"];
+                                    }
+                                }
                                 <select name="isDescending" id="isDescending" class="mx-2" onchange="this.form.submit()">
-                                    <option value="false" >Ascending</option>
-                                    <option value="true" selected>Descending</option>
-                                                                     
+                                    @if(isDescending == false){
+                                        <option value="False" selected>Ascending</option>
+                                        <option value="True">Descending</option>
+                                    }else{
+                                        <option value="False">Ascending</option>
+                                        <option value="True" selected>Descending</option>
+                                    }
+                                                                                                 
                                 </select>
                             </form>
 
