@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VShop", "VShop\VShop.csproj", "{591D000D-7572-43C6-879F-A77B3F1B480F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VShop.BLL", "VShop.BLL\VShop.BLL.csproj", "{6116DB6A-C34A-4BAA-AD7A-CBBA050DD220}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VShop.DAL", "VShop.DAL\VShop.DAL.csproj", "{C9680052-EE0B-44BB-AFBA-D6D83212D328}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{591D000D-7572-43C6-879F-A77B3F1B480F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{591D000D-7572-43C6-879F-A77B3F1B480F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{591D000D-7572-43C6-879F-A77B3F1B480F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6116DB6A-C34A-4BAA-AD7A-CBBA050DD220}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6116DB6A-C34A-4BAA-AD7A-CBBA050DD220}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6116DB6A-C34A-4BAA-AD7A-CBBA050DD220}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6116DB6A-C34A-4BAA-AD7A-CBBA050DD220}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9680052-EE0B-44BB-AFBA-D6D83212D328}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9680052-EE0B-44BB-AFBA-D6D83212D328}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9680052-EE0B-44BB-AFBA-D6D83212D328}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9680052-EE0B-44BB-AFBA-D6D83212D328}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

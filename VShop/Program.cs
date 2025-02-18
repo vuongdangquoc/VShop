@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using VShop.Models.Db;
-using VShop.Repositories;
-using VShop.RepositoryContracts;
-using VShop.UnitOfWork;
+using VShop.DAL.Models.Db;
+using VShop.DAL.Repositories;
+using VShop.DAL.RepositoryContracts;
+using VShop.BLL.ServiceContracts;
+using VShop.BLL.Services;
+using VShop.DAL.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +30,8 @@ builder.Services.AddScoped<IVoucherRepository,VoucherRepository>();
 builder.Services.AddScoped<IWardRepository,WardRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
