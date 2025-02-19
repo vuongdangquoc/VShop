@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace VShop.DAL.Models.Db;
 
-
 public partial class Role
 {
     public Guid Id { get; set; }

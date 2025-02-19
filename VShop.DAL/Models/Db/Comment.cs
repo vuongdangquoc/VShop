@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace VShop.DAL.Models.Db;
 
-
 public partial class Comment
 {
     public int Id { get; set; }

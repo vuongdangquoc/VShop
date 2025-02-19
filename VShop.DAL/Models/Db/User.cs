@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace VShop.DAL.Models.Db;
 
-
 public partial class User
 {
     public Guid Id { get; set; }
@@ -22,11 +21,15 @@ public partial class User
 
     public string Image { get; set; }
 
+    public Guid? RoleId { get; set; }
+
+    public short? Status { get; set; }
+
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
     public virtual ICollection<FavoriteProduct> FavoriteProducts { get; set; } = new List<FavoriteProduct>();
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
-    public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
+    public virtual Role Role { get; set; }
 }
