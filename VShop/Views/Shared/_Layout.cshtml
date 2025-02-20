@@ -246,9 +246,15 @@
                                     <li class="account_link">
                                         <a href="#"><i class="icon-user icons"></i></a>
                                         <ul class="dropdown_account_link">
-                                            <li><a href="#">My Account</a></li>
-                                            <li><a asp-controller="Account" asp-action="Login">Login</a></li>
-                                            <li><a href="#">Contact</a></li>
+                                            @if(User.Identity.IsAuthenticated){
+                                                <li><a href="#">My Account</a></li>
+                                                <li><a href="#">Order List</a></li>
+                                                <li><a href="/account/logout">Logout</a></li>
+                                            }
+                                            else{
+                                            <li><a href="/account/login">Login</a></li>
+                                            <li><a href="/account/Register">Register </a></li>
+                                            }
                                         </ul>
                                     </li>
                                     <li>
@@ -270,8 +276,14 @@
             <div class="search_close">
                 <i class="ion-close-round"></i>
             </div>
-            <form class="border-bottom" action="#">
-                <input class="border-0" placeholder="Search products..." type="text">
+            <form class="border-bottom" asp-controller="Products">                
+                <input type="hidden" name="category" value="@ViewData["category"]" />
+                <input type="hidden" name="minPrice" value="@ViewData["minPrice"]" />
+                <input type="hidden" name="maxPrice" value="@ViewData["maxPrice"]" />
+                <input type="hidden" name="page" value="@ViewData["page"]" />
+                <input type="hidden" name="sortBy" value="@ViewData["sortBy"]" />
+                <input type="hidden" name="isDescending" value="@ViewData["isDescending"]" />
+                <input class="border-0" name="search" placeholder="Search products..." type="text">
                 <button type="submit"><span class="icon-magnifier icons"></span></button>
             </form>
         </div>

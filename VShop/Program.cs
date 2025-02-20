@@ -41,7 +41,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+        options.ExpireTimeSpan = TimeSpan.FromDays(1);
         options.LoginPath = "/Account/Login";
         options.LogoutPath = "/Account/Logout";
     });

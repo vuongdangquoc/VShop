@@ -14,20 +14,29 @@ namespace VShop.DAL.Repositories
             _context = db;
         }
 
-        public async Task<string?> GetRoleByEmail(string email)
+        public async Task<bool> CheckEmailExistAsync(string email)
         {
-            var user = await  _context.Users.Include(x => x.Role).SingleOrDefaultAsync(x => x.Email.Equals(email));
-            if(user != null)
+            var result = await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(email));
+            if(result == null)
             {
-                return user.Role.Name;
+                return false;
             }
-            return null;
-            
+            return true;
+        }
+
+        public async Task<bool> CheckPhoneExistAsync(string phone)
+        {
+            var result = await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber.Equals(phone));
+            if (result == null)
+            {
+                return false;
+            }
+            return true;
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.Email.Equals(email));
+            var user = await _context.Users.Include(x=>x.Role).SingleOrDefaultAsync(x => x.Email.Equals(email) && x.Status != 2);
             return user;
         }
     }

@@ -9,7 +9,9 @@ namespace VShop.BLL.ServiceContracts
 {
     public interface IUserService
     {
-        public Task<bool> Login(LoginDTO loginDTO);
+        public Task<UserDTO?> Login(LoginDTO loginDTO);
         public Task<bool> Register(RegisterDTO registerDTO);
+        public Task<bool> CheckEmailExistAsync(string email);
+        public Task<bool> CheckPhoneExistAsync(string phone);
     }
 }

@@ -9,22 +9,31 @@ namespace VShop.BLL.Helper
 {
     public class ConfirmPasswordValidation : ValidationAttribute
     {
-        private readonly string _password;
-        public ConfirmPasswordValidation(string password)
+        private readonly string _passwordPropertyName;
+
+        public ConfirmPasswordValidation(string passwordPropertyName)
         {
-            _password = password;
+            _passwordPropertyName = passwordPropertyName;
             ErrorMessage = "Password do not match";
         }
 
-        public override bool IsValid(object? value)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            var passwordProperty = GetType().GetProperty(_password)?.GetValue(this,null) as string;
-            var confirmPassword = value as string;
-            if (confirmPassword != null) 
+            var passwordProperty = validationContext.ObjectType.GetProperty(_passwordPropertyName);
+            if (passwordProperty == null)
             {
-                return passwordProperty!.Equals(confirmPassword);
+                return new ValidationResult($"Property '{_passwordPropertyName}' not found.");
             }
-            return false;
+
+            var passwordValue = passwordProperty.GetValue(validationContext.ObjectInstance) as string;
+            var confirmPasswordValue = value as string;
+
+            if (passwordValue != confirmPasswordValue)
+            {
+                return new ValidationResult(ErrorMessage);
+            }
+
+            return ValidationResult.Success;
         }
     }
 }

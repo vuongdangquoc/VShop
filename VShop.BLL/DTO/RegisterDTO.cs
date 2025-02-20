@@ -10,8 +10,7 @@ namespace VShop.BLL.DTO
 {
     public class RegisterDTO
     {
-        [Required]
-        [StringLength(255,MinimumLength = 5,ErrorMessage = "Name must be between 5 and 100 characters")]
+        [StringLength(255,ErrorMessage = "Name must be under 255 characters")]
         public string? FullName { get; set; }
         [Required]
         [EmailAddress]
@@ -19,10 +18,11 @@ namespace VShop.BLL.DTO
         [StringLength(255)]
         public string? Email { get; set; }
         [Required]
-        [Range(0,9,ErrorMessage ="Please enter just number from 0 ->9")]
         [StringLength(11)]
         public string? Phone { get; set; }
         [Required]
+        [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$",
+        ErrorMessage = "Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character.")]
         public string? Password { get; set; }
         [Required]
         [ConfirmPasswordValidation("Password")]
