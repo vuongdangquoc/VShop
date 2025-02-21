@@ -86,7 +86,7 @@
                             </ul>
                         </div>
                         <div class="header_social d-flex">
-                            <span>Follow us</span>
+                            <span>Theo dõi chúng tôi</span>
                             <ul class="d-flex">
                                 <li><a href="#"><i class="icon-social-twitter icons"></i></a></li>
                                 <li><a href="#"><i class="icon-social-facebook icons"></i></a></li>
@@ -98,15 +98,15 @@
                         <div id="menu" class="text-left ">
                             <ul class="offcanvas_main_menu">
                                 <li class="menu-item-has-children active">
-                                    <a href="/">Home</a>
+                                    <a href="/">Trang chủ</a>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="/Products">Product</a>
+                                    <a href="/Products">Sản phẩm</a>
                                 </li>
                                 <li class="menu-item-has-children">
                                     <a href="#">Blog</a>                                  
                                 </li>
-                                <li><a href="#">Contact</a></li>
+                                <li><a href="#">Liên hệ</a></li>
                             </ul>
                         </div>
                     </div>
@@ -116,65 +116,15 @@
     </div>
     <!--offcanvas menu area end-->
     <!--mini cart-->
-    <div class="mini_cart">
-        <div class="cart_gallery">
-            <div class="cart_close">
-                <div class="cart_text">
-                    <h3>cart</h3>
-                </div>
-                <div class="mini_cart_close">
-                    <a href="javascript:void(0)"><i class="icon-close icons"></i></a>
-                </div>
-            </div>
-            <div class="cart_item">
-                <div class="cart_img">
-                    <a href="#"><img src="assets/img/product/product1.jpg" alt=""></a>
-                </div>
-                <div class="cart_info">
-                    <a href="#">Primis In Faucibus</a>
-                    <p>1 x <span> $65.00 </span></p>
-                </div>
-                <div class="cart_remove">
-                    <a href="#"><i class="icon-close icons"></i></a>
-                </div>
-            </div>
-            <div class="cart_item">
-                <div class="cart_img">
-                    <a href="#"><img src="assets/img/product/product2.jpg" alt=""></a>
-                </div>
-                <div class="cart_info">
-                    <a href="#">Letraset Sheets</a>
-                    <p>1 x <span> $60.00 </span></p>
-                </div>
-                <div class="cart_remove">
-                    <a href="#"><i class="icon-close icons"></i></a>
-                </div>
-            </div>
-        </div>
-        <div class="mini_cart_table">
-            <div class="cart_table_border">
-                <div class="cart_total">
-                    <span>Sub total:</span>
-                    <span class="price">$125.00</span>
-                </div>
-                <div class="cart_total mt-10">
-                    <span>total:</span>
-                    <span class="price">$125.00</span>
-                </div>
-            </div>
-        </div>
-        <div class="mini_cart_footer">
-            <div class="cart_button">
-                <a href="cart.html"><i class="fa fa-shopping-cart"></i> View cart</a>
-            </div>
-            <div class="cart_button">
-                <a href="checkout.html"><i class="fa fa-sign-in"></i> Checkout</a>
-            </div>
-        </div>
+    <div class="mini_cart">               
     </div>
     <!--mini cart end-->
     <!--header area start-->
-    <header class="header_section header_transparent">
+    <header class="header_section header_transparent" style="position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+background-color:#DFE5E2;">
         <div class="header_top">
             <div class="container-fluid">
                 <div class="row">
@@ -216,7 +166,7 @@
             </div>
         </div>
 
-        <div class="main_header">
+        <div class="main_header p-2 mt-1">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12">
@@ -231,12 +181,12 @@
                             <div class="main_menu d-none d-lg-block">
                                 <nav>
                                     <ul class="d-flex">
-                                        <li><a class="active" href="/">Home</a> </li>
-                                        <li><a href="/Products">Product</a></li>                               
+                                        <li><a class="active" href="/">Trang chủ</a> </li>
+                                        <li><a href="/Products">Sản phẩm</a></li>                               
                                         <li>
                                             <a href="blog.html">Blog</a>                                        
                                         </li>
-                                        <li><a href="#">Contact</a></li>
+                                        <li><a href="#">Liên hệ</a></li>
                                     </ul>
                                 </nav>
                             </div>
@@ -247,13 +197,13 @@
                                         <a href="#"><i class="icon-user icons"></i></a>
                                         <ul class="dropdown_account_link">
                                             @if(User.Identity.IsAuthenticated){
-                                                <li><a href="#">My Account</a></li>
-                                                <li><a href="#">Order List</a></li>
-                                                <li><a href="/account/logout">Logout</a></li>
+                                                <li><a href="#">Tài khoản của tôi</a></li>
+                                                <li><a href="#">Danh sách đơn hàng</a></li>
+                                                <li><a href="/account/logout">Đăng xuất</a></li>
                                             }
                                             else{
-                                            <li><a href="/account/login">Login</a></li>
-                                            <li><a href="/account/Register">Register </a></li>
+                                            <li><a href="/account/login">Đăng nhập</a></li>
+                                            <li><a href="/account/Register">Đăng ký</a></li>
                                             }
                                         </ul>
                                     </li>
@@ -386,6 +336,42 @@
 
     <!-- Main JS -->
     <script src="/assets/js/main.js"></script>
+
+    <!--Update mini cart -->
+    <script>
+        function updateCart(productId,count){
+            $.ajax({
+                url: '/Cart/UpdateCart',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({productId: productId, count: count}),
+                success: function(result) {
+                    $(".item_count").html(result);
+                    getMiniCart();
+                },
+                error: function(){
+                    alert('Error product not found');
+                }
+            });
+        }
+
+        function getMiniCart(){
+            $.ajax({
+                url:'/Cart/SmallCart',
+                type:'GET',
+                success: function(result){
+                    $(".mini_cart").html(result);
+                },
+                error: function(){
+                    console.error('Error fetching mini cart');
+                }
+            });
+        }
+
+        $(document).ready(function(){
+            getMiniCart();
+        })
+    </script>
 
 </body>
 

@@ -5,6 +5,7 @@ namespace VShop.DAL.RepositoryContracts
 {
     public interface IProductRepository : IGenericRepository<Product>
     {
+        public Task<Product?> GetProductByIdAsync(int id);
         public Task<List<Product>> GetProductsFromListProductIdAsync(List<int> listId);
         public Task<List<Product>> GetNewArrialsAsync(int count,string category ="all");
 

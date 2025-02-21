@@ -64,6 +64,7 @@ namespace VShop.Controllers
         public IActionResult Logout()
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            Response.Cookies.Delete("Cart");
             return RedirectToAction("Login", "Account");
         }
 

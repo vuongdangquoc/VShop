@@ -1,0 +1,54 @@
+﻿@model List<ProductCartDTO>
+
+@if (Model != null && Model.Any())
+{
+    <div class="cart_gallery">
+        <div class="cart_close">
+            <div class="cart_text">
+                <h3>cart</h3>
+            </div>
+            <div class="mini_cart_close">
+                <a href="javascript:void(0)"><i class="icon-close icons"></i></a>
+            </div>
+        </div>
+        @foreach (var item in Model)
+        {
+            <div class="cart_item">
+                <div class="cart_img">
+                    <a href="/Product/ProductDetails/@item.Id"><img src="@item.Image" alt="@item.Name"></a>
+                </div>
+                <div class="cart_info">
+                    <a href="/Product/ProductDetails/@item.Id">@item.Name</a>
+                    <p>@item.Count x <span>@item.Price.GetValueOrDefault(0).ToString("C0", new System.Globalization.CultureInfo("vi-VN")) </span></p>
+                </div>
+                <div class="cart_remove">
+                    <a onclink="updateCart(@item.Id,0)"><i class="icon-close icons"></i></a>
+                </div>
+            </div>
+        }
+
+
+    </div>
+    <div class="mini_cart_table">
+        <div class="cart_table_border">
+            <div class="cart_total mt-10">
+                <span>total:</span>
+                <span class="price">@Model.Sum(x => x.SumPrice).GetValueOrDefault(0).ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(".item_count").html(@Model.Sum(x => x.Count));
+    </script>
+}
+<script src="/assets/js/main.js"></script>
+
+<div class="mini_cart_footer">
+    <div class="cart_button">
+        <a asp-action="Index" asp-controller="Cart"><i class="fa fa-shopping-cart"></i> View cart</a>
+    </div>
+    <div class="cart_button">
+        <a asp-action="Checkout" asp-controller="Cart"><i class="fa fa-sign-in"></i> Checkout</a>
+    </div>
+</div>

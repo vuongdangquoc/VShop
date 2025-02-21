@@ -77,5 +77,11 @@ namespace VShop.DAL.Repositories
                                .Take(pageSize)
                                .ToListAsync();
         }
+
+        public async Task<Product?> GetProductByIdAsync(int id)
+        {
+            var result = await _context.Products.Include(x => x.Category).Where(x => x.Status).SingleOrDefaultAsync(p => p.Id == id);
+            return result;
+        }
     }
 }

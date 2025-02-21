@@ -9,16 +9,21 @@ namespace VShop.BLL.ServiceContracts
     {
         public Task<List<ProductDTO>?> GetBestSellingProductsAsync(string category = "all");
 
-        public Task<List<ProductDTO>?> GetNewArrivalsAsync( string category = "all");
+        public Task<List<ProductDTO>?> GetNewArrivalsAsync(string category = "all");
 
         Task<List<ProductDTO>> GetAllProductsAsync(
              string? search,
              string? category,
              double? minPrice,
-             double? maxPrice,            
+             double? maxPrice,
              SortBy sortBy,
              bool isDescending,
              int page,
              int pageSize);
-        }
+        public Task<bool> CheckProductExist(int id);
+
+        public Task<ProductDTO?> GetProductById(int id);
+        public Task<List<ProductCartDTO>> GetProductsInCart(List<CartCookieDTO> items);
+
+    }
 }

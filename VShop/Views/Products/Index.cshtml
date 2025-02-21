@@ -1,4 +1,4 @@
-﻿@Model List<ProductViewModel>
+﻿@model List<ProductDTO>
     @{
         List<CategoryDTO>? listCategoryViewModel = new List<CategoryDTO>(); // list category
         if (ViewData["listCategoryViewModel"] != null)
@@ -13,7 +13,7 @@
         }
     }
     <!--shop  area start-->
-    <div class="shop_section shop_reverse">
+    <div class="shop_section shop_reverse" style="padding-top: 20px">
         <div class="container">
             <div class="row">
                 <div class="col-lg-3 col-md-12">
@@ -59,10 +59,10 @@
                                         {
                                             <div class="recent_product_list d-flex mb-25">
                                                 <div class="recent_thumb">
-                                                    <a href="product-details.html"><img src="@ListNewArrivals[i].Image" alt=""></a>
+                                                    <a asp-controller="Products" asp-action="detail" asp-route-id="@ListNewArrivals[i].Id"><img src="@ListNewArrivals[i].Image" alt=""></a>
                                                 </div>
                                                 <div class="recent_content">
-                                                    <h4><a href="product-details.html">@ListNewArrivals[i].Name</a></h4>
+                                                    <h4><a asp-controller="Products" asp-action="detail" asp-route-id="@ListNewArrivals[i].Id">@ListNewArrivals[i].Name</a></h4>
                                                     <div class="price_box">
                                                         <span class="current_price">@ListNewArrivals[i].CurrentPrice</span>
                                                         <span class="old_price">@ListNewArrivals[i].OldPrice</span>
@@ -167,7 +167,7 @@
                             <div class="col-lg-4 col-md-4 col-sm-6 col-6 ">
                                 <div class="single_product">
                                     <div class="product_thumb">
-                                        <a href="product-details.html">
+                                        <a asp-controller="Products" asp-action="detail" asp-route-id="@item.Id">
                                             <img class="primary_img" src="@item.Image" alt="consectetur">
                                         </a>
                                         <div class="product_action">
@@ -203,13 +203,13 @@
                                                 <li><span>(2)</span></li>
                                             </ul>
                                         </div>
-                                        <h4 class="product_name"><a href="product-details.html">@item.Name</a></h4>
+                                        <h4 class="product_name"><a asp-controller="Products" asp-action="detail" asp-route-id="@item.Id">@item.Name</a></h4>
                                         <div class="price_box">
                                             <span class="current_price">@item.CurrentPrice</span>
                                             <span class="old_price">@item.OldPrice</span>
                                         </div>
                                         <div class="add_to_cart">
-                                            <a class="btn btn-primary" href="#" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">Add To Cart</a>
+                                            <a class="btn btn-primary" onclick="updateCart(@item.Id,1)" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">Add To Cart</a>
                                         </div>
                                     </div>
                                     <div class="product_list_content">
@@ -223,7 +223,7 @@
                                             @Html.Raw(item.Describe)
                                         </div>
                                         <div class="add_to_cart">
-                                            <a class="btn btn-primary" href="#" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">Add To Cart</a>
+                                            <a class="btn btn-primary" onclick="updateCart(@item.Id,1)" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">Add To Cart</a>
 
                                         </div>
                                     </div>
