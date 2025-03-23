@@ -1,0 +1,344 @@
+﻿@using VShop.DAL.Models.Db
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var listVoucher = new List<Voucher>();
+    if (ViewData["list"] != null)
+    {
+        listVoucher = ViewData["list"] as List<Voucher>;
+    }
+    int page = 1;
+    if (ViewData["page"] != null)
+    {
+        page = Convert.ToInt32(ViewData["page"]);
+    }
+}
+@model Voucher
+
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Quản lý mã giảm giá</h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item active">Quản lý mã giảm giá</li>
+        </ol>
+        <div class="d-flex mb-2 justify-content-between">
+            <form class="d-flex form-inline" action="/admin/Voucher" method="get">
+                <div class="input-group">
+                    <input class="form-control" type="text" placeholder="Tìm kiếm ..." aria-label="Tìm kiếm" aria-describedby="btnNavbarSearch" name="search" value="@ViewData["search"]" />
+                    <button class="btn btn-primary" id="btnNavbarSearch" type="submit"><i class="fas fa-search"></i></button>
+                </div>
+                <div style="margin-left: 20px;">
+                    @{
+                        bool? status = null;
+                        if (ViewData["status"] != null)
+                        {
+                            status = Convert.ToBoolean(ViewData["status"]);
+                        }
+                    }
+                    <select name="status" class="form-control" style=" width: fit-content" onchange="this.form.submit()">
+                        <option value="">-- Chọn trạng thái --</option>
+                        @if (status == true)
+                        {
+                            <option value="True" selected>Hoạt động</option>
+                            <option value="False">Không hoạt động</option>
+                        }
+                        else if (status == false)
+                        {
+                            <option value="True">Hoạt động</option>
+                            <option value="False" selected>Không hoạt động</option>
+                        }
+                        else
+                        {
+                            <option value="True">Hoạt động</option>
+                            <option value="False">Không hoạt động</option>
+                        }
+
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Start</label>
+                    <input class="form-control" type="datetime-local" name="start" value="@(ViewData["start"] != null ? Convert.ToDateTime(ViewData["start"]).ToString("yyyy-MM-ddTHH:mm") : "")" />
+                </div>
+                <div class="input-group">
+                    <label>End</label>
+                    <input class="form-control" type="datetime-local" name="end" value="@(ViewData["end"] != null ? Convert.ToDateTime(ViewData["end"]).ToString("yyyy-MM-ddTHH:mm") : "")" />
+                </div>
+                <input type="hidden" name="page" value="@ViewData["page"]" />
+            </form>
+
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createModal">Thêm mới danh mục</button>
+
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Mã giảm giá
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                Tên mã
+                            </th>
+                            <th>Gía trị giảm giá</th>
+                            <th>Gía tối thiểu</th>
+                            <th>Số lượng</th>
+                            <th>Thời gian bắt đầu</th>
+                            <th>Thời gian kết thúc</th>
+                            <th>Mô tả</th>
+                            <th>Loại chiết khấu</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (listVoucher != null && listVoucher.Any())
+                        {
+                            foreach (var item in listVoucher)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.DiscountCode)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.DiscountValue)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.MinimumValue)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.StartDate)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.EndDate)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Describe)</td>
+                                    <td>@(item.IsDiscountPercentage == true ?"Phần trăm":"giá trị")</td>
+                                    <td>
+                                        <div class="form-check form-switch">
+                                            <form action="/Admin/voucher/ChangeStatus/@item.Id" method="post">
+                                                <input class="form-check-input" type="checkbox" @(item.Status ? "checked" : "") onchange="this.form.submit()">
+                                            </form>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal" data-id="@item.Id" data-discountCode="@item.DiscountCode" data-discountValue="@item.DiscountValue" data-minimumValue="@item.MinimumValue" data-quantity="@item.Quantity" data-startDate="@item.StartDate" data-endDate="@item.EndDate" data-describe="@item.Describe" data-discountType="@item.IsDiscountPercentage.ToString().ToLower()" data-isActive="@item.Status.ToString().ToLower()">Chỉnh sửa</button>
+
+
+                                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" *@
+                                                data-id="@item.Id">
+                                            Xóa
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+                <nav aria-label="Page navigation example d-flex">
+                    @{
+                        int count = 0;
+                        if (ViewData["count"] != null)
+                        {
+                            count = Convert.ToInt32(ViewData["count"]);
+                        }
+                    }
+                    @if (count != 0)
+                    {
+                        <ul class="pagination">
+                            <li class="page-item @(page ==1 ? "disabled":"")">
+                                <a class="page-link" href="/admin/voucher?search=@ViewData["search"]&status=@ViewData["status"]&page=@(page-1)" tabindex="-1">Previous</a>
+                            </li>
+                            @for (int i = 1; i <= count; i++)
+                            {
+                                <li class="page-item @(page == i ? "active" : "")"><a class="page-link" href="/admin/voucher?search=@ViewData["search"]&status=@ViewData["status"]&page=@i">@i</a></li>
+                            }
+                            <li class="page-item @(page ==count ? "disabled":"")">
+                                <a class="page-link" href="/admin/category?search=@ViewData["search"]&status=@ViewData["status"]&page=@(page+1)">Next</a>
+                            </li>
+                        </ul>
+                    }
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Create -->
+    <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="createModalLabel">Create Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createForm" method="post" action="voucher/Add">
+                        
+                        <div class="mb-3">
+                            <label for="createDiscountCode">Tên mã</label>
+                            <input type="text" id="createDiscountCode" asp-for="DiscountCode" />
+                            <span asp-validation-for="DiscountCode"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createDiscountCode">Gía trị giảm giá</label>
+                            <input type="number" id="createDiscountValue" asp-for="DiscountValue" />
+                            <span asp-validation-for="DiscountValue"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createDiscountCode">Gía tối thiểu</label>
+                            <input type="number" id="createMinimumValue" asp-for="MinimumValue" />
+                            <span asp-validation-for="MinimumValue"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createDiscountCode">Số lượng</label>
+                            <input type="number" id="createQuantity" asp-for="Quantity" />
+                            <span asp-validation-for="Quantity"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createDiscountCode">Thời gian bắt đầu</label>
+                            <input type="datetime-local" id="createStartDate" asp-for="StartDate" />
+                            <span asp-validation-for="StartDate"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createDiscountCode">Thời gian kết thúc</label>
+                            <input type="datetime-local" id="createEndDate" asp-for="EndDate" />
+                            <span asp-validation-for="EndDate"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createDiscountCode">Mô tả</label>
+                            <input type="text" id="createDescribe" asp-for="Describe" />
+                            <span asp-validation-for="Describe"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createDiscountCode">Loại chiết khấu</label>
+                            <select id="editDiscountType" asp-for="IsDiscountPercentage">
+                                <option value="True">Phần trăm</option>
+                                <option value="False">Gía trị</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editIsActive" class="form-check-label">Trạng thái</label>
+                            <input type="checkbox" class="form-check-input" id="editIsActive" asp-for="Status">
+                        </div>
+                        <button type="submit" class="btn btn-success">Create</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editModalLabel">Edit Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm" method="post" action="voucher/edit">
+                        <input type="hidden" id="editId" asp-for="Id" />
+                        <div class="mb-3">
+                            <label for="editDiscountCode">Tên mã</label>
+                            <input type="text" id="editDiscountCode" asp-for="DiscountCode" />
+                            <span asp-validation-for="DiscountCode"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createDiscountCode">Gía trị giảm giá</label>
+                            <input type="number" id="editDiscountValue" asp-for="DiscountValue" />
+                            <span asp-validation-for="DiscountValue"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createDiscountCode">Gía tối thiểu</label>
+                            <input type="number" id="editMinimumValue" asp-for="MinimumValue" />
+                            <span asp-validation-for="MinimumValue"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createDiscountCode">Số lượng</label>
+                            <input type="number" id="editQuantity" asp-for="Quantity" />
+                            <span asp-validation-for="Quantity"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createDiscountCode">Thời gian bắt đầu</label>
+                            <input type="datetime" id="editStartDate" asp-for="StartDate" />
+                            <span asp-validation-for="StartDate"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createDiscountCode">Thời gian kết thúc</label>
+                            <input type="datetime" id="editEndDate" asp-for="EndDate" />
+                            <span asp-validation-for="EndDate"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDescribe">Mô tả</label>
+                            <input type="text" id="editDescribe" asp-for="Describe" />
+                            <span asp-validation-for="Describe"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDiscountType">Loại chiết khấu</label>
+                            <select id="editDiscountType" asp-for="IsDiscountPercentage">
+                                <option value="True">Phần trăm</option>
+                                <option value="False">Gía trị</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editIsActive" class="form-check-label">Trạng thái</label>
+                            <input type="checkbox" class="form-check-input" id="editIsActive" asp-for="Status">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Modal Delete -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                 </div> 
+                <div class="modal-body"> 
+                   <p>Are you sure to delete this voucher ?</p> 
+                 </div> 
+                <div class="modal-footer"> 
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button> 
+                    <form action="Voucher/Delete" method="post"> 
+                        <input type="hidden" id="deleteId" name="id" /> 
+                      <button type="submit" class="btn btn-danger" id="confirmDelete">Confirm</button>
+                    </form> 
+                 </div> 
+            </div> 
+        </div> 
+     </div> 
+</main>
+<script>
+
+    editModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        document.getElementById('editId').value = button.getAttribute('data-id');
+        document.getElementById('editDiscountCode').value = button.getAttribute('data-discountCode');
+        document.getElementById('editDiscountValue').value = button.getAttribute('data-discountValue');
+        document.getElementById('editMinimumValue').value = button.getAttribute('data-minimumValue');
+        document.getElementById('editQuantity').value = button.getAttribute('data-quantity');
+        document.getElementById('editStartDate').value = button.getAttribute('data-startDate');
+        document.getElementById('editEndDate').value = button.getAttribute('data-endDate');
+        document.getElementById('editDescribe').value = button.getAttribute('data-describe');
+        const isActive = button.getAttribute('data-isActive') === 'true';
+            const isPercentage1 = button.getAttribute('data-discountType') === 'true';
+
+    // Lấy combobox
+    const isDiscountPercentageCombobox = editModal.querySelector('#editDiscountType');
+
+    // Thiết lập option được chọn dựa vào isPercentage
+    if (isPercentage1) {
+        isDiscountPercentageCombobox.value = 'True'; // Giá trị của option cần được chọn
+    } else {
+        isDiscountPercentageCombobox.value = 'False'; // Giá trị của option khác
+    }
+
+        // Binding giá trị vào checkbox
+        const isActiveCheckbox = editModal.querySelector('#editIsActive');
+        isActiveCheckbox.checked = isActive;
+    });
+
+    var deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        document.getElementById('deleteId').value = button.getAttribute('data-id');
+    });
+</script>

@@ -104,9 +104,9 @@
                                     <a href="/Products">Sản phẩm</a>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="#">Blog</a>                                  
+                                    <a asp-controller="blog">Blog</a>                                  
                                 </li>
-                                <li><a href="#">Liên hệ</a></li>
+                                <li><a asp-controller="contact">Liên hệ</a></li>
                             </ul>
                         </div>
                     </div>
@@ -116,14 +116,14 @@
     </div>
     <!--offcanvas menu area end-->
     <!--mini cart-->
-    <div class="mini_cart">               
+    <div class="mini_cart" >               
     </div>
     <!--mini cart end-->
     <!--header area start-->
     <header class="header_section header_transparent" style="position: sticky;
     top: 0;
     width: 100%;
-    z-index: 1000;
+    z-index: 1;
 background-color:#DFE5E2;">
         <div class="header_top">
             <div class="container-fluid">
@@ -184,9 +184,9 @@ background-color:#DFE5E2;">
                                         <li><a class="active" href="/">Trang chủ</a> </li>
                                         <li><a href="/Products">Sản phẩm</a></li>                               
                                         <li>
-                                            <a href="blog.html">Blog</a>                                        
+                                            <a asp-controller="Blog">Blog</a>                                        
                                         </li>
-                                        <li><a href="#">Liên hệ</a></li>
+                                        <li><a asp-controller="Contact">Liên hệ</a></li>
                                     </ul>
                                 </nav>
                             </div>
@@ -198,7 +198,7 @@ background-color:#DFE5E2;">
                                         <ul class="dropdown_account_link">
                                             @if(User.Identity.IsAuthenticated){
                                                 <li><a href="#">Tài khoản của tôi</a></li>
-                                                <li><a href="#">Danh sách đơn hàng</a></li>
+                                                <li><a href="/cart">Danh sách đơn hàng</a></li>
                                                 <li><a href="/account/logout">Đăng xuất</a></li>
                                             }
                                             else{
@@ -270,7 +270,7 @@ background-color:#DFE5E2;">
                                 <li><a href="shop.html">Shop</a></li>
                                 <li><a href="product-details.html">Product</a></li>
                                 <li><a href="#">pages</a></li>
-                                <li><a href="blog.html">Blog</a></li>
+                                <li><a asp-controller="Blog">Blog</a></li>
                             </ul>
                         </div>
                         <div class="footer_social">
@@ -315,6 +315,7 @@ background-color:#DFE5E2;">
             </div>
         </div>
     </footer>
+
     <!--footer area end-->
     <!-- JS
     ============================================ -->
@@ -331,8 +332,6 @@ background-color:#DFE5E2;">
     <script src="/assets/js/tippy-bundle.umd.js"></script>
     <script src="/assets/js/jquery-ui.min.js"></script>
     <script src="/assets/js/jquery.instagramFeed.min.js"></script>
-    <script src="/assets/js/jquery.magnific-popup.min.js"></script>
-    <script src="/assets/js/mailchimp-ajax.js"></script>
 
     <!-- Main JS -->
     <script src="/assets/js/main.js"></script>
@@ -348,6 +347,23 @@ background-color:#DFE5E2;">
                 success: function(result) {
                     $(".item_count").html(result);
                     getMiniCart();
+                },
+                error: function(){
+                    alert('Error product not found');
+                }
+            });
+        }
+
+        function updateQuantityItemInCart(productId,count){
+            $.ajax({
+                url: '/Cart/UpdateCart?updateQuantity=true',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({productId: productId, count: count}),
+                success: function(result) {
+                    $(".item_count").html(result);
+                    getMiniCart();
+                    location.reload();
                 },
                 error: function(){
                     alert('Error product not found');
@@ -372,6 +388,9 @@ background-color:#DFE5E2;">
             getMiniCart();
         })
     </script>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await Component.InvokeAsync("Notyf")
 
 </body>
 

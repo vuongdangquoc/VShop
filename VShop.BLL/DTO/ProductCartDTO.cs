@@ -13,7 +13,7 @@ namespace VShop.BLL.DTO
         public string? Image { get; set; }
 
         public int Count { get; set; }
-
+        public int Quantity { get; set; }
         public double? Price { get; set; }
 
         public double? SumPrice { get; set; }

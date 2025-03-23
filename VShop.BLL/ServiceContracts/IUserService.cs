@@ -13,5 +13,6 @@ namespace VShop.BLL.ServiceContracts
         public Task<bool> Register(RegisterDTO registerDTO);
         public Task<bool> CheckEmailExistAsync(string email);
         public Task<bool> CheckPhoneExistAsync(string phone);
+
     }
 }

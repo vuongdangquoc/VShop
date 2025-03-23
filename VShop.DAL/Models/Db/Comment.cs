@@ -15,7 +15,7 @@ public partial class Comment
 
     public DateTime? UpdatedDate { get; set; }
 
-    public int ParentId { get; set; }
+    public int? ParentId { get; set; }
 
     public Guid UserId { get; set; }
 

@@ -55,7 +55,7 @@ namespace VShop.BLL.Services
                 PhoneNumber = registerDTO.Phone,
                 Status = 1,
                 Image = "UploadFiles/Avatars/defaultAvatar.jpg",
-                RoleId = role?.Id
+                RoleId = role.Id
             };
             var passwordHash = _passwordHasher.HashPassword(user,registerDTO.Password);
             user.PasswordHash = passwordHash;
@@ -69,6 +69,7 @@ namespace VShop.BLL.Services
         {
             return new UserDTO
             {
+                Id = user.Id,
                 FullName = user.FullName,
                 Email = user.Email,
                 UserName = user.UserName,

@@ -14,7 +14,7 @@ namespace VShop.BLL.DTO
 
         public DateTime? UpdatedDate { get; set; }
 
-        public int ParentId { get; set; }
+        public int? ParentId { get; set; }
 
         public Guid UserId { get; set; }
         public string UserName { get; set; }

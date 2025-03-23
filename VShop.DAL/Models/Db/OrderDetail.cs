@@ -15,6 +15,8 @@ public partial class OrderDetail
 
     public int Quantity { get; set; }
 
+    public short? Rating { get; set; }
+
     public virtual Order Order { get; set; }
 
     public virtual Product Product { get; set; }

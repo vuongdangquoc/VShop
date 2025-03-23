@@ -23,13 +23,13 @@ public partial class Order
 
     public int Status { get; set; }
 
-    public Guid UserId { get; set; }
+    public Guid? UserId { get; set; }
 
-    public int DistrictId { get; set; }
+    public string District { get; set; }
 
-    public int ProvinceId { get; set; }
+    public string Province { get; set; }
 
-    public int WardId { get; set; }
+    public string Ward { get; set; }
 
     public int? VoucherId { get; set; }
 
@@ -37,15 +37,9 @@ public partial class Order
 
     public int TypePayment { get; set; }
 
-    public virtual District District { get; set; }
-
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
-
-    public virtual Province Province { get; set; }
 
     public virtual User User { get; set; }
 
     public virtual Voucher Voucher { get; set; }
-
-    public virtual Ward Ward { get; set; }
 }

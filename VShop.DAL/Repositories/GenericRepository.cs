@@ -21,9 +21,9 @@ namespace VShop.DAL.Repositories
             _dbSet.Add(entity);
         }
 
-        public void AddRangeAsync(List<T> list)
+        public void AddRange(List<T> list)
         {
-            _dbSet.AddRangeAsync(list);
+            _dbSet.AddRange(list);
         }
 
         public IEnumerable<T> GetAll()

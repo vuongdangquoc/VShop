@@ -36,7 +36,7 @@ namespace VShop.Controllers
             var listNewArrivals = await _productService.GetNewArrivalsAsync();
             ViewData["ListNewArrivals"] = listNewArrivals;
 
-            var listProducts = await _productService.GetAllProductsAsync(search,category,minPrice,maxPrice,sortBy,isDescending,page,9);
+            var listProducts = await _productService.GetAllActiveProductsAsync(search,category,minPrice,maxPrice,sortBy,isDescending,page,9);
             return View(listProducts);
         }
 

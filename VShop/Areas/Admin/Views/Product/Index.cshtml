@@ -1,0 +1,215 @@
+﻿@using VShop.DAL.Models.Db
+@model List<ProductDTO>
+@{
+    int page = 1;
+    if(ViewData["page"] != null){
+        page = Convert.ToInt32(ViewData["page"]);
+    }
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Quản lý sản phẩm</h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item active">Quản lý sản phẩm</li>
+        </ol>
+        <div class="d-flex mb-2 justify-content-between">
+            <form class="d-flex form-inline" action="/admin/Product" method="get">
+                <div class="input-group">
+                    <input class="form-control" type="text" placeholder="Tìm kiếm ..." aria-label="Tìm kiếm" aria-describedby="btnNavbarSearch" name="search" value="@ViewData["search"]" />
+                    <button class="btn btn-primary" id="btnNavbarSearch" type="submit"><i class="fas fa-search"></i></button>
+                </div>
+                <div style="margin-left: 20px">
+                    <select name="categoryId" class="form-control" style=" width: fit-content" onchange="this.form.submit()">
+                        <option value="">-- Chọn danh mục --</option>
+                        @{
+                            int cateId = 0;
+                            if (ViewData["categoryId"] != null)
+                            {
+                                cateId = Convert.ToInt32(ViewData["categoryId"]);
+                            }
+                        }
+                        @if (ViewBag.categories != null)
+                        {
+                            @foreach (var c in ViewBag.categories as List<Category>)
+                            {
+                                if(cateId == c.Id){
+                                    <option value="@c.Id" selected>@c.Name</option>
+
+                                }
+                                <option value="@c.Id">@c.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div style="margin-left: 20px;">
+                    @{
+                        bool? status =null;
+                        if (ViewData["status"] != null)
+                        {
+                            status = Convert.ToBoolean(ViewData["status"]);
+                        }
+                    }
+                    <select name="status" class="form-control" style=" width: fit-content" onchange="this.form.submit()">
+                        <option value="">-- Chọn trạng thái --</option>
+                        @if(status == true){
+                            <option value="True" selected>Hoạt động</option>
+                            <option value="False">Không hoạt động</option>
+                        }else if (status == false){
+                            <option value="True">Hoạt động</option>
+                            <option value="False" selected>Không hoạt động</option>
+                        }else{
+                            <option value="True">Hoạt động</option>
+                            <option value="False">Không hoạt động</option>
+                        }
+
+                    </select>
+                </div>
+
+                <input type="hidden" name="sortBy" value="@ViewData["sortBy"]" />
+                <input type="hidden" name="isDescending" value="@ViewData["isDescending"]" />
+                <input type="hidden" name="page" value="@ViewData["page"]" />
+            </form>
+
+            <a href="/Admin/Product/Add"><button class="btn btn-success">Thêm mới sản phẩm</button></a>
+
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Products
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Tên
+                                @{
+                                    bool? isDescendingName = false;
+                                    bool? isDescendingPrice = false;
+                                    if (ViewData["isDescending"] != null)
+                                    {
+                                        var temp = Convert.ToBoolean(ViewData["isDescending"]);
+                                        isDescendingName = temp ? false : true;
+                                        isDescendingPrice = temp ? false : true;
+                                    }
+                                    if (ViewData["sortBy"]!=null && (SortBy)ViewData["sortBy"] == SortBy.Name){
+                                        isDescendingPrice = true;
+                                    }
+                                    else if (ViewData["sortBy"] != null && (SortBy)ViewData["sortBy"] == SortBy.Price)
+                                    {
+                                        isDescendingName = true;
+                                    }
+                                }
+                                <a href="/admin/product?search=@ViewData["search"]&categoryId=@ViewData["categoryId"]&status=@ViewData["status"]&sortBy=Name&isDescending=@isDescendingName&page=1">
+                                <i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>
+                                </a>
+                                </th>
+                            <th>Hình ảnh</th>
+                            <th>Danh mục</th>
+                            <th>Số lượng</th>
+                            <th>Giá
+                                <a href="/admin/product?search=@ViewData["search"]&categoryId=@ViewData["categoryId"]&status=@ViewData["status"]&sortBy=Price&isDescending=@isDescendingPrice&page=1">
+                                    <i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>
+                                </a>
+                            </th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                                    <td><img style="width: 50px" src="/@item.Image" /></td>
+                                    <td>@Html.DisplayFor(modelItem => item.CategoryName)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                                    @{
+                                        string priceVND = item.Price.ToString("C0", new System.Globalization.CultureInfo("vi-VN"));
+                                    }
+                                    <td>@Html.DisplayFor(modelItem => priceVND)</td>
+                                    <td>
+                                        <div class="form-check form-switch">
+                                            <form action="/Admin/Product/ChangeStatus/@item.Id" method="post">
+                                            <input class="form-check-input" type="checkbox" @(item.Status ? "checked" : "") onchange="this.form.submit()">
+
+                                            </form>
+                                        </div>
+                                    </td>
+                                    <td>
+
+                                        <a href="/Admin/Product/edit/@item.Id"><button class="btn btn-primary btn-sm">Chỉnh sửa</button></a>
+
+
+                                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                        data-id="@item.Id">
+                                            Xóa
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>                    
+                </table>
+                <nav aria-label="Page navigation example d-flex">
+                    @{
+                        int count = 0;
+                        if (ViewData["count"] != null)
+                        {
+                            count = Convert.ToInt32(ViewData["count"]);
+                        }
+                    }
+                    @if(count != 0){
+                        <ul class="pagination">
+                            <li class="page-item @(page ==1 ? "disabled":"")">
+                                <a class="page-link" href="/admin/product?search=@ViewData["search"]&categoryId=@ViewData["categoryId"]&status=@ViewData["status"]&sortBy=@ViewData["sortBy"]&isDescending=@ViewData["isDescending"]&page=@(page-1)" tabindex="-1">Previous</a>
+                            </li>
+                            @for (int i = 1; i <= count; i++)
+                            {
+                                <li class="page-item @(page == i ? "active" : "")"><a class="page-link" href="/admin/product?search=@ViewData["search"]&categoryId=@ViewData["categoryId"]&status=@ViewData["status"]&sortBy=@ViewData["sortBy"]&isDescending=@ViewData["isDescending"]&page=@i">@i</a></li>
+                            }
+                            <li class="page-item @(page ==count ? "disabled":"")">
+                                <a class="page-link" href="/admin/product?search=@ViewData["search"]&categoryId=@ViewData["categoryId"]&status=@ViewData["status"]&sortBy=@ViewData["sortBy"]&isDescending=@ViewData["isDescending"]&page=@(page+1)">Next</a>
+                            </li>
+                        </ul>
+                    }                    
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Delete -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure to delete this product ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="/Admin/Product/Delete" method="post">
+                        <input type="hidden" id="deleteId" name="id" />
+                        <button type="submit" class="btn btn-danger" id="confirmDelete">Confirm</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    var deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        document.getElementById('deleteId').value = button.getAttribute('data-id');
+    });
+</script>

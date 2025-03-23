@@ -1,0 +1,33 @@
+﻿@using VShop.DAL.Models.Db
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model List<Post>
+
+    <div class="container">
+        <div class="row mt-3">
+            @foreach(Post post in Model ){
+                <div class="col-3 m-2 shadow p-2">
+                    <div class="blog_thumb">
+                        <a asp-controller="Blog" asp-action="Detail" asp-route-id="@post.Id"><img style="height: 210px" src="/@post.Image" alt=""></a>
+                    </div>
+                    <figcaption class="blog_content">
+                        <div class="blog_meta">
+                            <ul class="d-flex">
+                                <li><span class="meta_tag">News</span></li>
+                                <li><span>@post.CreateAt.ToString("MMMdd,yyyy", new System.Globalization.CultureInfo("en-US"))</span></li>
+                            </ul>
+                        </div>
+                        <h3>
+                        <a asp-controller="Blog" asp-action="Detail" asp-route-id="@post.Id">
+                                @post.Title
+                            </a>
+                        </h3>
+                    </figcaption>
+                </div>
+            }
+            
+        </div>
+    </div>

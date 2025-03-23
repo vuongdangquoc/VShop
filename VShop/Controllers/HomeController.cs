@@ -10,12 +10,13 @@ namespace VShop.Controllers
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger, IProductService productService, ICategoryService categoryService)
+        private readonly IPostService _postService;
+        public HomeController(ILogger<HomeController> logger, IProductService productService, ICategoryService categoryService, IPostService postService)
         {
             _logger = logger;
             _productService = productService;
             _categoryService = categoryService;
+            _postService = postService;
         }
 
         public async Task<IActionResult> Index()
@@ -46,6 +47,10 @@ namespace VShop.Controllers
             {
                 ViewData["ListNewArrivals" + (i + 1)] = await _productService.GetNewArrivalsAsync(listCategoryHasProduct[i]);
             }
+
+            //get 3 ActivePost;
+            var listPost = await _postService.GetAllPostAsync();
+            ViewData["ListPost"] = listPost.OrderByDescending( x=> x.CreateAt).Take(3).ToList();
 
             //return
             return View();

@@ -39,5 +39,11 @@ namespace VShop.DAL.Repositories
                 .ToListAsync();
             return listProductId;
         }
+
+        public async Task<List<OrderDetail>?> GetOrderByUserIdAsync(Guid userId)
+        {
+            var result = await _context.OrderDetails.Include(x => x.Order).Include(x=> x.Product).Where(o => o.Order.UserId == userId).ToListAsync();
+            return result;
+        }
     }
 }

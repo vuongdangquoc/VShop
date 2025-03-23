@@ -29,9 +29,7 @@ public partial class Voucher
 
     public string CreatedBy { get; set; }
 
-    public bool DiscountAmount { get; set; }
-
-    public bool DiscountPercentage { get; set; }
+    public bool IsDiscountPercentage { get; set; }
 
     public string UpdatedBy { get; set; }
 

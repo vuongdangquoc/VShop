@@ -1,0 +1,284 @@
+﻿@using VShop.DAL.Models.Db
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var listPost = new List<Post>();
+    if (ViewData["list"] != null)
+    {
+        listPost = ViewData["list"] as List<Post>;
+    }
+    int page = 1;
+    if (ViewData["page"] != null)
+    {
+        page = Convert.ToInt32(ViewData["page"]);
+    }
+}
+@model Post
+<script src="~/lib/Ckeditor/ckeditor.js"></script>
+
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Quản lý blog</h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item active">Quản lý blog</li>
+        </ol>
+        <div class="d-flex mb-2 justify-content-between">
+            <form class="d-flex form-inline" action="/admin/post" method="get">
+                <div class="input-group">
+                    <input class="form-control" type="text" placeholder="Tìm kiếm ..." aria-label="Tìm kiếm" aria-describedby="btnNavbarSearch" name="search" value="@ViewData["search"]" />
+                    <button class="btn btn-primary" id="btnNavbarSearch" type="submit"><i class="fas fa-search"></i></button>
+                </div>
+                <div style="margin-left: 20px;">
+                    @{
+                        bool? status = null;
+                        if (ViewData["status"] != null)
+                        {
+                            status = Convert.ToBoolean(ViewData["status"]);
+                        }
+                    }
+                    <select name="status" class="form-control" style=" width: fit-content" onchange="this.form.submit()">
+                        <option value="">-- Chọn trạng thái --</option>
+                        @if (status == true)
+                        {
+                            <option value="True" selected>Hoạt động</option>
+                            <option value="False">Không hoạt động</option>
+                        }
+                        else if (status == false)
+                        {
+                            <option value="True">Hoạt động</option>
+                            <option value="False" selected>Không hoạt động</option>
+                        }
+                        else
+                        {
+                            <option value="True">Hoạt động</option>
+                            <option value="False">Không hoạt động</option>
+                        }
+
+                    </select>
+                </div>
+                <input type="hidden" name="page" value="@ViewData["page"]" />
+            </form>
+
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createModal">Thêm mới blog</button>
+
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Mã giảm giá
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                Tiêu đề
+                            </th>
+                            <th>Hình ảnh</th>
+                            <th>Tác giả</th>
+                            <th>Thời gian tạo</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (listPost != null && listPost.Any())
+                        {
+                            foreach (var item in listPost)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                                    <td><img src="/@item.Image" style="width:100px" /></td>
+                                    <td>@Html.DisplayFor(modelItem => item.CreateByNavigation.FullName)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.CreateAt)</td>
+                                    <td>
+                                        <div class="form-check form-switch">
+                                            <form action="/Admin/Post/ChangeStatus/@item.Id" method="post">
+                                                <input class="form-check-input" type="checkbox" @(item.Status ? "checked" : "") onchange="this.form.submit()">
+                                            </form>
+                                        </div>
+                                    </td>
+                                    @{
+                                        string d = item.CreateAt.ToString("yyyy-MM-ddTHH:mm");
+                                    }
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal" data-id="@item.Id" data-title="@item.Title" data-image="/@item.Image" data-content="@item.Content" data-createBy="@item.CreateByNavigation.FullName" data-createAt="@d" data-isActive="@item.Status.ToString().ToLower()">Chỉnh sửa</button>
+
+
+                                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" 
+                                                data-id="@item.Id">
+                                            Xóa
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+                <nav aria-label="Page navigation example d-flex">
+                    @{
+                        int count = 0;
+                        if (ViewData["count"] != null)
+                        {
+                            count = Convert.ToInt32(ViewData["count"]);
+                        }
+                    }
+                    @if (count != 0)
+                    {
+                        <ul class="pagination">
+                            <li class="page-item @(page ==1 ? "disabled":"")">
+                                <a class="page-link" href="/admin/post?search=@ViewData["search"]&status=@ViewData["status"]&page=@(page-1)" tabindex="-1">Previous</a>
+                            </li>
+                            @for (int i = 1; i <= count; i++)
+                            {
+                                <li class="page-item @(page == i ? "active" : "")"><a class="page-link" href="/admin/post?search=@ViewData["search"]&status=@ViewData["status"]&page=@i">@i</a></li>
+                            }
+                            <li class="page-item @(page ==count ? "disabled":"")">
+                                <a class="page-link" href="/admin/post?search=@ViewData["search"]&status=@ViewData["status"]&page=@(page+1)">Next</a>
+                            </li>
+                        </ul>
+                    }
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Create -->
+    <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="createModalLabel">Tạo blog mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createForm" method="post" action="post/Add" enctype="multipart/form-data">
+
+                        <div class="form-control">
+                            <label for="createDiscountCode">Tiêu đề</label>
+                            <input type="text" id="createDiscountCode" asp-for="Title" />
+                            <span asp-validation-for="Title"></span>
+                        </div>
+                        <div class="form-control">
+                            <label for="createDiscountCode">Hình ảnh</label>
+                            <input type="file" id="createDiscountValue" name="file" asp-for="Image" />
+                            <span asp-validation-for="Image"></span>
+                        </div>
+                        <div class="form-control">
+                            <label for="createDiscountCode">Nội dung</label>
+                            <textarea class="form-control" id="editor" rows="4" asp-for="Content"></textarea>
+                            <span asp-validation-for="Content"></span>
+                        </div>
+                        <div class="form-control">
+                            <label for="editIsActive" class="form-check-label">Trạng thái</label>
+                            <input type="checkbox" class="form-check-input" id="editIsActive" asp-for="Status">
+                        </div>
+                        <button type="submit" class="btn btn-success">Create</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editModalLabel">Chỉnh sửa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm" method="post" action="post/edit" enctype="multipart/form-data">
+                        <input type="hidden" id="editId" asp-for="Id" />
+                        <div class="form-group">
+                            <label for="editTitle">Tiêu đề</label>
+                            <input type="text" id="editTitle" asp-for="Title" />
+                            <span asp-validation-for="Title"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="editImage">Hình ảnh</label>
+                            <input type="file" id="editImage" asp-for="Image" name="file" />
+                            <br />
+                            <img id="currentImage" style="width: 100px" />
+                            <span asp-validation-for="Image"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label">Content:</label>
+                            <textarea class="form-control" id="editContent" rows="4" asp-for="Content"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCreateBy">Tác giả</label>
+                            <input type="text" id="editCreateBy" disabled />
+                        </div>
+                        <div class="form-group">
+                            <label for="editCreateAt">Thời gian tạo</label>
+                            <input type="datetime-local" id="editCreateAt" disable  />
+                        </div>
+                        <div class="form-group">
+                            <label for="editIsActive" class="form-check-label">Trạng thái</label>
+                            <input type="checkbox" class="form-check-input" id="editIsActive" asp-for="Status">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Delete -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure to delete this voucher ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="post/Delete" method="post">
+                        <input type="hidden" id="deleteId" name="id" />
+                        <button type="submit" class="btn btn-danger" id="confirmDelete">Confirm</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    editModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+    document.getElementById('editId').value = button.getAttribute('data-id');
+        document.getElementById('editTitle').value = button.getAttribute('data-title');
+        document.getElementById('currentImage').src = button.getAttribute('data-image');
+        document.getElementById('editContent').value = button.getAttribute('data-content');
+            var editor = CKEDITOR.replace('editContent');
+
+    // Đợi CKEditor khởi tạo xong rồi mới gán dữ liệu
+    editor.on('instanceReady', function () {
+        editor.setData(button.getAttribute('data-content'));
+    });
+        document.getElementById('editCreateBy').value = button.getAttribute('data-createBy');
+        document.getElementById('editCreateAt').value = button.getAttribute('data-createAt');
+        const isActive = button.getAttribute('data-isActive') === 'true';
+            const isPercentage1 = button.getAttribute('data-discountType') === 'true';
+
+    
+
+        // Binding giá trị vào checkbox
+        const isActiveCheckbox = editModal.querySelector('#editIsActive');
+        isActiveCheckbox.checked = isActive;
+    });
+
+    var deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        document.getElementById('deleteId').value = button.getAttribute('data-id');
+    });
+
+    CKEDITOR.replace('editor');
+</script>

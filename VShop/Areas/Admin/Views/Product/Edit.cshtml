@@ -1,0 +1,267 @@
+﻿@using System.Security.Claims
+@using VShop.DAL.Models.Db
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model UpdateProductDTO
+@{
+    ViewData["Title"] = "Chỉnh Sửa Sản Phẩm";
+}
+<script src="~/lib/Ckeditor/ckeditor.js"></script>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Chỉnh Sửa Sản Phẩm</h3>
+                </div>
+                <div class="card-body">
+                    <form action="/Admin/Product/Edit" method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Id" value="@Model.Id" />
+                        <input type="hidden" asp-for="UpdatedBy" value="@User.FindFirst(ClaimTypes.Name)?.Value" />
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label asp-for="Name">Tên sản phẩm</label>
+                                    <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="CategoryID">Danh mục</label>
+                                    <select asp-for="CategoryID" class="form-control">
+                                        <option value="">-- Chọn danh mục --</option>
+                                        @if(ViewBag.categories != null){
+                                            @foreach(var c in ViewBag.categories as List<Category>){
+                                                @if(c.Id == Model.CategoryID){
+                                                <option value="@c.Id" selected >@c.Name</option>
+
+                                                }else{
+                                                    <option value="@c.Id">@c.Name</option>
+                                                }
+                                                }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="CategoryID" class="text-danger"></span>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label asp-for="Quantity">Số lượng</label>
+                                            <input asp-for="Quantity" class="form-control" type="number" />
+                                            <span asp-validation-for="Quantity" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label asp-for="Price">Giá bán</label>
+                                            <input asp-for="Price" class="form-control" type="number" step="0.01" />
+                                            <span asp-validation-for="Price" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label asp-for="PurchasePrice">Giá nhập</label>
+                                            <input asp-for="PurchasePrice" class="form-control" type="number" step="0.01" />
+                                            <span asp-validation-for="PurchasePrice" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="Discount">Giảm giá (%)</label>
+                                    <input asp-for="Discount" class="form-control" type="number" min="0" max="100" />
+                                    <span asp-validation-for="Discount" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="Describe">Mô tả sản phẩm</label>
+                                    <textarea class="form-control" id="editor" asp-for="Describe" rows="5"></textarea>
+                                    <span asp-validation-for="Describe" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" asp-for="Status" class="custom-control-input" id="statusSwitch">
+                                        <label class="custom-control-label" for="statusSwitch">Trạng thái hiển thị</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label asp-for="Image">Ảnh chính</label>
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" name="mainImageUpload" id="mainImageUpload" class="custom-file-input" onchange="loadMainImage(event)" />
+
+                                            <label class="custom-file-label" for="mainImageUpload">Chọn file</label>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" asp-for="Image" />
+                                    <span asp-validation-for="Image" class="text-danger"></span>
+                                    <div class="mt-2">
+                                        <img id="mainImagePreview" src="/@Model.Image" class="img-fluid img-thumbnail" style="max-height: 200px;" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Ảnh phụ</label>
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" name="additionalImagesUpload" id="additionalImagesUpload" multiple class="custom-file-input" onchange="loadAdditionalImages(event)" />
+
+                                            <label class="custom-file-label" for="additionalImagesUpload">Chọn nhiều file</label>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" asp-for="ListImages" />
+                                    <div id="additionalImagesPreview" class="mt-2 d-flex flex-wrap">
+                                        @if (!string.IsNullOrEmpty(Model.ListImages))
+                                        {
+                                            @foreach (var imgSrc in Model.ListImages.Split(','))
+                                            {
+                                                if (!string.IsNullOrEmpty(imgSrc))
+                                                {
+                                                    <div class="additional-image-container m-1">
+                                                        <img src="/@imgSrc" class="img-fluid img-thumbnail" style="height: 100px; width: 100px; object-fit: cover;" />
+                                                        <button type="button" class="btn btn-sm btn-danger remove-image" onclick="removeImage(this, '@imgSrc')">×</button>
+                                                    </div>
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    CKEDITOR.replace('editor');
+    // Khai báo hàm removeImage đầu tiên để tránh lỗi "not defined"
+    function removeImage(button, imgSrc) {
+        // Xóa ảnh khỏi mảng
+        var index = additionalImages.indexOf(imgSrc);
+        if (index > -1) {
+            additionalImages.splice(index, 1);
+        }
+
+        // Xóa phần tử khỏi DOM
+        button.parentElement.remove();
+
+        // Cập nhật giá trị cho input hidden
+        updateAdditionalImagesInput();
+    }
+
+    // Khởi tạo mảng ảnh phụ
+    var additionalImages = [];
+
+    $(document).ready(function() {
+        // Hiển thị tên file khi chọn file
+        $(".custom-file-input").on("change", function() {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+
+        // Khởi tạo mảng ảnh phụ từ model
+        var listImagesInput = document.getElementById('ListImages');
+        if (listImagesInput && listImagesInput.value) {
+            additionalImages = listImagesInput.value.split(',').filter(item => item.trim() !== '');
+
+            // Hiển thị ảnh phụ từ model
+            renderExistingImages();
+        }
+    });
+
+    // Hiển thị các ảnh phụ từ model
+    function renderExistingImages() {
+        var container = document.getElementById('additionalImagesPreview');
+        container.innerHTML = ''; // Xóa nội dung cũ
+
+        additionalImages.forEach(function(imgSrc) {
+            if (!imgSrc || imgSrc.trim() === '') return;
+
+            var imgContainer = document.createElement('div');
+            imgContainer.className = 'additional-image-container m-1';
+
+            var img = document.createElement('img');
+            img.src = imgSrc;
+            img.className = 'img-fluid img-thumbnail';
+            img.style.height = '100px';
+            img.style.width = '100px';
+            img.style.objectFit = 'cover';
+
+            var removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn btn-sm btn-danger remove-image';
+            removeBtn.innerHTML = '×';
+            removeBtn.onclick = function() {
+                removeImage(this, imgSrc);
+            };
+
+            imgContainer.appendChild(img);
+            imgContainer.appendChild(removeBtn);
+            container.appendChild(imgContainer);
+        });
+    }
+
+    // Hiển thị preview ảnh chính
+    function loadMainImage(event) {
+        var output = document.getElementById('mainImagePreview');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+            URL.revokeObjectURL(output.src) // Giải phóng bộ nhớ
+        }
+
+        // Cập nhật giá trị cho input hidden
+        // Trong thực tế, bạn sẽ cần xử lý upload ảnh và cập nhật đường dẫn
+        document.getElementById('Image').value = "uploaded_image_path.jpg";
+    }
+
+    // Quản lý ảnh phụ
+    function loadAdditionalImages(event) {
+        var container = document.getElementById('additionalImagesPreview');
+        var files = event.target.files;
+
+        for (var i = 0; i < files.length; i++) {
+            var imgSrc = URL.createObjectURL(files[i]);
+            var imgContainer = document.createElement('div');
+            imgContainer.className = 'additional-image-container m-1';
+
+            var img = document.createElement('img');
+            img.src = imgSrc;
+            img.className = 'img-fluid img-thumbnail';
+            img.style.height = '100px';
+            img.style.width = '100px';
+            img.style.objectFit = 'cover';
+
+            var removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn btn-sm btn-danger remove-image';
+            removeBtn.innerHTML = '×';
+
+            // Sử dụng closure để giữ biến imgSrc đúng giá trị
+            (function(imgPath) {
+                removeBtn.onclick = function() {
+                    removeImage(this, imgPath);
+                };
+            })(imgSrc);
+
+            imgContainer.appendChild(img);
+            imgContainer.appendChild(removeBtn);
+            container.appendChild(imgContainer);
+        }
+    }
+</script>

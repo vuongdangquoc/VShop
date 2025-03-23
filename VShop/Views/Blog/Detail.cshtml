@@ -1,0 +1,58 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model PostDetailDTO
+<!--blog body area start-->
+<div class="blog_details">
+    <div class="blog_details_thumb text-center">
+        <img src="/@Model.Image" alt="">
+    </div>
+    <div class="blog_wrapper_details">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="blog_details_content">
+                        <div class="post_header">
+                            <h2 class="post_title">@Model.Title</h2>
+                            <div class="blog_meta">
+                                <ul class="d-flex">
+                                    <li>@Model.NameAuthor</li>
+                                    <li>@Model.CreateAt</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="blog_details_desc">
+                            @Html.Raw(Model.Content)
+                        </div>
+
+                    </div>
+                </div>
+                <div class="post_tags_social border-bottom pt-0">
+                    <div class="post__social d-flex justify-content-center align-items-center">
+                        <span>SHARE:</span>
+                        <ul class="d-flex">
+                            <li><a href="#"><i class="ion-social-twitter"></i></a></li>
+                            <li><a href="#"><i class="ion-social-facebook"></i></a></li>
+                            <li><a href="#"><i class="ion-social-googleplus"></i></a></li>
+                            <li><a href="#"><i class="ion-social-instagram-outline"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="blog_navigation p-1">
+                    <ul class="d-flex justify-content-between">
+                        @if(Model.prevId != null){
+                            <li class="previous"><a asp-controller="Blog" asp-action="Detail" asp-route-id="@Model.prevId"><i class="icon-arrow-left icons"></i> Previous</a></li>
+                        }
+                        @if(Model.nextId != null){
+                            <li class="next"><a asp-controller="Blog" asp-action="Detail" asp-route-id="@Model.nextId">Next  <i class="icon-arrow-right icons"></i></a></li>
+                        }                                                
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--blog section area end-->

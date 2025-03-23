@@ -15,5 +15,11 @@ public partial class Post
 
     public string Content { get; set; }
 
+    public Guid CreateBy { get; set; }
+
+    public DateTime CreateAt { get; set; }
+
     public bool Status { get; set; }
+
+    public virtual User CreateByNavigation { get; set; }
 }

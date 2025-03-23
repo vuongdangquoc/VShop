@@ -43,6 +43,7 @@ namespace VShop.Controllers
             }
             
             var claims = new List<Claim>();
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, userDTO.Id.ToString()));
             claims.Add(new Claim(ClaimTypes.Name, userDTO.FullName));
             claims.Add(new Claim(ClaimTypes.Email, userDTO.Email));
             //-----------

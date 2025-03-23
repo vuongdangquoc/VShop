@@ -17,13 +17,79 @@ namespace VShop.BLL.Services
             _unitOfWork = unitOfWork; 
         }
 
+        public async Task<bool> ChangeStatusProduct(int id, string updateBy)
+        {
+            var product = await _unitOfWork.ProductRepository.GetProductByIdAsync(id);
+            if (product == null) return false;
+            product.Status = !product.Status;
+            product.UpdatedBy = updateBy;
+            _unitOfWork.ProductRepository.Update(product);
+            var result = await _unitOfWork.SaveChangesAsync();
+            return result > 0;
+        }
+
         public async Task<bool> CheckProductExist(int id)
         {
             var product = await _unitOfWork.ProductRepository.GetProductByIdAsync(id);
-            return product != null;
+            return product!= null && product.Status;
         }
 
-        public async Task<List<ProductDTO>> GetAllProductsAsync(
+        public async Task<bool> CreateProduct(CreateProductDTO productDTO)
+        {
+            var product = new Product()
+            {
+                Name = productDTO.Name,
+                CategoryId = productDTO.CategoryID,
+                Quantity = productDTO.Quantity,
+                Describe = productDTO.Describe,
+                Image = productDTO.Image,
+                ListImages = productDTO.ListImages,
+                Price = productDTO.Price,
+                Discount = productDTO.Discount,
+                CreatedBy = productDTO.CreatedBy,
+                CreatedDate = DateTime.Now,
+                Status = productDTO.Status,
+                PurchasePrice = productDTO.PurchasePrice,
+            };
+            _unitOfWork.ProductRepository.Add(product);
+            var result = await _unitOfWork.SaveChangesAsync();
+            return result > 0;
+        }
+
+        public async Task<bool> DeleteProduct(int id)
+        {
+            _unitOfWork.ProductRepository.DeleteProduct(id);
+            var result = await _unitOfWork.SaveChangesAsync();
+            return result > 0;
+        }
+
+        public async Task<bool> EditProduct(UpdateProductDTO productDTO)
+        {
+            var findProduct = _unitOfWork.ProductRepository.GetProductById(productDTO.Id);
+            if (findProduct != null)
+            {
+                findProduct.Name = productDTO.Name;
+                findProduct.CategoryId = productDTO.CategoryID;
+                findProduct.Quantity = productDTO.Quantity;
+                findProduct.Describe = productDTO.Describe;
+                if(productDTO.Image != null)
+                findProduct.Image = productDTO.Image;
+                if(productDTO.ListImages != null)
+                findProduct.ListImages = productDTO.ListImages;
+                findProduct.Price = productDTO.Price;
+                findProduct.Discount = productDTO.Discount;
+                findProduct.UpdatedDate = DateTime.Now;
+                findProduct.UpdatedBy = productDTO.UpdatedBy;
+                findProduct.Status = productDTO.Status;
+                findProduct.PurchasePrice = productDTO.PurchasePrice;
+            }
+            var x = findProduct;
+                _unitOfWork.ProductRepository.Update(findProduct);
+            var result = await _unitOfWork.SaveChangesAsync();
+            return result > 0;
+        }
+
+        public async Task<List<ProductDTO>> GetAllActiveProductsAsync(
              string? search,
              string? category,
              double? minPrice,
@@ -33,13 +99,21 @@ namespace VShop.BLL.Services
              int page,
              int pageSize = 9)
         {
-            var list = (await _unitOfWork.ProductRepository.GetAllProductsAsync(search,category,minPrice,maxPrice,page,pageSize,sortBy,isDescending)).ToList();
+            var list = (await _unitOfWork.ProductRepository.GetAllProductsAsync(search,category,minPrice,maxPrice,page,pageSize,sortBy,isDescending)).Where(x => x.Status).ToList();
             var result = convertListProductToListProductViewModel(list);
             return result;
         }
+
         public async Task<List<ProductDTO>> GetAllProductsAsync()
         {
             var list = await _unitOfWork.ProductRepository.GetQuery().ToListAsync();
+            var result = convertListProductToListProductViewModel(list);
+            return result;
+        }
+
+        public async Task<List<ProductDTO>> GetAllProductsInAdminAsync(string? search, int? categoryId,bool? status, SortBy sortBy, bool isDescending)
+        {
+            var list = (await _unitOfWork.ProductRepository.GetAllProductsInAdminAsync(search, categoryId,status, sortBy, isDescending)).ToList();
             var result = convertListProductToListProductViewModel(list);
             return result;
         }
@@ -70,7 +144,7 @@ namespace VShop.BLL.Services
         public async Task<ProductDTO?> GetProductById(int id)
         {
            var product = await _unitOfWork.ProductRepository.GetProductByIdAsync(id);
-            if (product == null) 
+            if (product == null || !product.Status ) 
             {
                 return null;
             }
@@ -101,9 +175,34 @@ namespace VShop.BLL.Services
                 Price = product.Price - (product.Discount * product.Price/100),
                 Image = product.Image,
                 Count = items.Single(x => x.ProductId == product.Id).Count,
-                SumPrice = product.Price - (product.Discount * product.Price/100) * items.Single(x => x.ProductId == product.Id).Count
+                Quantity = product.Quantity,
+                SumPrice = (product.Price - (product.Discount * product.Price/100)) * items.Single(x => x.ProductId == product.Id).Count
             }).ToList();
             return result;
+        }
+
+        public async Task<UpdateProductDTO?> GetUpdateProductDTO(int id)
+        {
+            var product = await _unitOfWork.ProductRepository.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                return null;
+            }
+            var productDTO = new UpdateProductDTO
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Quantity = product.Quantity,
+                Image = product.Image,
+                Discount = (int)product.Discount,
+                Describe = product.Describe,
+                Price = product.Price,
+                PurchasePrice = product.PurchasePrice,
+                CategoryID = product.CategoryId,
+                Status = product.Status,
+                ListImages = String.Join(",", JsonConvert.DeserializeObject<List<string>>(product.ListImages))
+            };
+            return productDTO;
         }
 
         private List<ProductDTO> convertListProductToListProductViewModel(List<Product> list)
@@ -117,7 +216,11 @@ namespace VShop.BLL.Services
                 CurrentPrice = x.Discount != 0 ? (convertToVND(x.Price * (100 - x.Discount) / 100)) : (convertToVND(x.Price)),
                 OldPrice = x.Discount != 0 ? (convertToVND(x.Price)) : null,
                 Describe = x.Describe,
-                CategoryName = x.Category.Name
+                Price = x.Price,
+                Quantity = x.Quantity,
+                CategoryId = x.CategoryId,
+                CategoryName = x.Category.Name,
+                Status = x.Status
             }).ToList();
             return result;
         }

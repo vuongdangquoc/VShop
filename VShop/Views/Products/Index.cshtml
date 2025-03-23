@@ -6,7 +6,7 @@
             listCategoryViewModel = ViewData["listCategoryViewModel"] as List<CategoryDTO>;
         }
 
-        List<ProductDTO>? ListNewArrivals = new List<ProductDTO>(); // list category
+        List<ProductDTO>? ListNewArrivals = new List<ProductDTO>(); // list new arrival
         if (ViewData["ListNewArrivals"] != null)
         {
             ListNewArrivals = ViewData["ListNewArrivals"] as List<ProductDTO>;
@@ -40,17 +40,18 @@
 
                                 </ul>
                             </div>
-                            <div class="widget_list widget_filter">
-                                <h2>Filter By</h2>
-                                <div class="filter__list slider_range">
-                                    <h3>price</h3>
-                                    <form action="#">
-                                        <div id="slider-range"></div>
-                                        <span>Range:</span>
-                                        <input type="text" name="text" id="amount" />
-                                    </form>
-                                </div>
+                        <div class="widget_list widget_filter">
+                            <h2>Filter By</h2>
+                            <div class="filter__list">
+                                <h3>Price</h3>
+                                <form id="price-filter-form">
+                                    <label><input type="radio" style="width:fit-content" name="priceRange" value="<400000"> 0 - 400000 ₫</label><br>
+                                    <label><input type="radio" style="width:fit-content" name="priceRange" value="400000-800000"> 400000 - 800000 ₫</label><br>
+                                    <label><input type="radio" style="width:fit-content" name="priceRange" value=">800000"> > 800000 ₫</label><br>
+                                </form>
                             </div>
+                        </div>
+
                             <div class="widget_list">
                                 <h2>Recent Product</h2>
                                 <div class="recent_product">

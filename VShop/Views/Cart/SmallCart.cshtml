@@ -15,14 +15,14 @@
         {
             <div class="cart_item">
                 <div class="cart_img">
-                    <a href="/Product/ProductDetails/@item.Id"><img src="@item.Image" alt="@item.Name"></a>
+                    <a href="/Product/ProductDetails/@item.Id"><img src="/@item.Image" alt="@item.Name"></a>
                 </div>
                 <div class="cart_info">
                     <a href="/Product/ProductDetails/@item.Id">@item.Name</a>
                     <p>@item.Count x <span>@item.Price.GetValueOrDefault(0).ToString("C0", new System.Globalization.CultureInfo("vi-VN")) </span></p>
                 </div>
                 <div class="cart_remove">
-                    <a onclink="updateCart(@item.Id,0)"><i class="icon-close icons"></i></a>
+                    <a onclick="updateCart(@item.Id,0)"><i class="icon-close icons"></i></a>
                 </div>
             </div>
         }

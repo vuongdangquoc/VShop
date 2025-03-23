@@ -1,5 +1,114 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model List<ProductCartDTO>
+<!--shopping cart area start -->
+<div class="shopping_cart_area mt-5">
+    <div class="container">
+        <form action="#">
+            <div class="cart_page_inner mb-60">
+                <div class="row d-flex justify-content-end">
+                    <div class="col-12">
+                        <div class="cart_page_tabel">
+                            <table>
+                                <thead class="text-center">
+                                    <tr>
+                                        <th>product</th>
+                                        <th>information</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                        <th style="min-width: 100px">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (ProductCartDTO productDTO in Model)
+                                    {
+                                        <tr class="border-top">
+                                            <td>
+                                                <div class="cart_product_thumb">
+                                                    <img src="/@productDTO.Image" alt="">
+                                                </div>
+                                            </td>
+                                            <td style="max-height:100%">
+                                                <div class="cart_product_text">
+                                                    <h4>@productDTO.Name</h4>                                                
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="cart_product_price">
+                                                    <span>@productDTO.Price.GetValueOrDefault(0).ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</span>
+                                                </div>
+                                            </td>
+                                            <td class="product_quantity">
+                                                <div class="cart_product_quantity">
+                                                    <input min="1" max="@productDTO.Quantity"
+                                                    value="@productDTO.Count"
+                                                    type="number"
+                                                    onchange="updateQuantityItemInCart(@productDTO.Id, $(this).val())">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="cart_product_price">
+                                                    <span>@productDTO.SumPrice.GetValueOrDefault(0).ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="cart_product_remove text-right">
+                                                    <a onclick="updateCart(@productDTO.Id,0)"><i class="ion-android-close"></i></a>
+                                                </div>
+                                            </td>
+
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="cart_page_button border-top d-flex justify-content-between">
+                            <div class="shopping_cart_btn">
+                                <a asp-controller="Cart" asp-action="Clear" class="btn btn-primary border">CLEAR SHOPPING CART</a>
+                                <button class="btn btn-primary border" type="submit">UPDATE YOUR CART</button>
+                            </div>
+                            <div class="shopping_continue_btn">
+                                <button class="btn btn-primary" type="submit"><a asp-controller="Products" asp-action="Index">CONTINUE SHOPPING</a></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--coupon code area start-->
+            <div class="cart_page_bottom">
+                <div class="row" style="justify-content:space-around">
+                    <div class="col-lg-4 col-md-6 col-sm-6">
+                        <div class="shopping_coupon_calculate">
+                            <h3 class="border-bottom">Coupon Discount   </h3>
+                            <p>Enter your coupon code if you have one.</p>
+                            <input class="border" placeholder="Enter your code" type="text">
+                            <button class="btn btn-primary" type="submit">apply coupon</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-8">
+                        <div class="grand_totall_area">
+                            <div class="grand_totall_inner border-bottom">
+                                <div class="cart_subtotal d-flex justify-content-between">
+                                    <p>sub total </p>
+                                    @{
+                                        var total = Model.Sum(x => x.SumPrice).GetValueOrDefault(0);
+                                    }
+                                    <span>@total.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</span>
+                                </div>
+                                <div class="cart_grandtotal d-flex justify-content-between">
+                                    <p>grand total</p>
+                                    <span>@total.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</span>
+                                </div>
+                            </div>
+                            <div class="proceed_checkout_btn">
+                                <a class="btn btn-primary" asp-action="checkout" asp-controller="cart">Proceed to Checkout</a>
+                            </div>
+                            <a >Checkout with Mutilple Adresses</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--coupon code area end-->
+        </form>
+    </div>
+</div>
+<!--shopping cart area end -->
